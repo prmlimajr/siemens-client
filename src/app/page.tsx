@@ -1,27 +1,31 @@
 'use client';
 
-import Image from 'next/image';
-import styles from './page.module.css';
-
 import { useCallback, useEffect, useState } from 'react';
 import { getPictures } from './services/getPictures';
 import { Picture } from './types/picture';
+import Image from 'next/image';
+
+import {
+  ActionContainer,
+  Container,
+  GalleryContainer,
+  StyledImage,
+  Viewer,
+} from './styles';
 
 export default function Home() {
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [lastPage, setLastPage] = useState(1);
   const [images, setImages] = useState<Picture[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<Picture | null>(null);
 
   const loadPictures = useCallback(async () => {
     try {
-      const { pictures } = await getPictures(page, 4);
+      const { pictures, lastPage } = await getPictures(page, 4);
 
       setImages(pictures);
-
-      if (pictures.length === 0) {
-        setHasMore(false);
-      }
+      setLastPage(lastPage);
     } catch (error) {
       console.error(error);
     } finally {
@@ -33,94 +37,63 @@ export default function Home() {
     loadPictures();
   }, [page, loadPictures]);
 
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+  return (
+    <Container>
+      <Viewer>
+        {selectedImage && (
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src={selectedImage.pictureFile.imagePath}
+            alt={selectedImage.title}
+            width={430}
+            height={393}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        )}
+
+        <ActionContainer>
+          <StyledImage
+            src="/images/previous.png"
+            alt="Previous"
+            $clickable={page > 1}
+            width={20}
+            height={20}
+            onClick={() => {
+              if (page > 1) {
+                setPage(page - 1);
+              }
+            }}
+          />
+
+          <StyledImage
+            src="/images/next.png"
+            alt="Next"
+            $clickable={page < lastPage}
+            width={20}
+            height={20}
+            onClick={() => {
+              if (page < lastPage) {
+                setPage(page + 1);
+              }
+            }}
+          />
+        </ActionContainer>
+      </Viewer>
+
+      <GalleryContainer>
+        {images.map((image) => (
           <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+            key={image.id}
+            src={image.pictureFile.thumbnailPath}
+            alt={image.title}
+            width={145}
+            height={133}
+            onClick={() => setSelectedImage(image)}
           />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        ))}
+      </GalleryContainer>
+    </Container>
   );
 }
