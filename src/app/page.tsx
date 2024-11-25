@@ -1,7 +1,38 @@
+'use client';
+
 import Image from 'next/image';
 import styles from './page.module.css';
 
+import { useCallback, useEffect, useState } from 'react';
+import { getPictures } from './services/getPictures';
+import { Picture } from './types/picture';
+
 export default function Home() {
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [images, setImages] = useState<Picture[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadPictures = useCallback(async () => {
+    try {
+      const { pictures } = await getPictures(page, 4);
+
+      setImages(pictures);
+
+      if (pictures.length === 0) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    loadPictures();
+  }, [page, loadPictures]);
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
