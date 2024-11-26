@@ -17,6 +17,7 @@ export const ActionButtons = ({
 }) => (
   <ActionContainer>
     <ActionButton
+      unoptimized={true}
       src="/images/previous.png"
       alt="Previous button"
       $clickable={canGoPrevious}
@@ -27,6 +28,7 @@ export const ActionButtons = ({
     />
 
     <ActionButton
+      unoptimized={true}
       src="/images/next.png"
       alt="Next button"
       $clickable={canGoNext}
@@ -39,6 +41,7 @@ export const ActionButtons = ({
     <Divider />
 
     <ActionButton
+      unoptimized={true}
       src="/images/rotate_left.png"
       alt="Rotate left button"
       width={20}
@@ -49,6 +52,7 @@ export const ActionButtons = ({
     />
 
     <ActionButton
+      unoptimized={true}
       src="/images/rotate_right.png"
       alt="Rotate right button"
       width={20}

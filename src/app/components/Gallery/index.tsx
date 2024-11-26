@@ -30,6 +30,7 @@ export const Gallery = ({
       : images.map((image) => (
           <GalleryItem key={image.id} role="listitem">
             <Thumbnail
+              unoptimized={true}
               src={image.pictureFile.thumbnailPath}
               alt={`Thumbnail of ${image.title}`}
               width={145}

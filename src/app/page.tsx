@@ -75,6 +75,7 @@ export default function Home() {
           <LoadingContent width={430} height={393} />
         ) : (
           <SelectedImage
+            unoptimized={true}
             src={selectedImage.pictureFile.imagePath}
             alt={`Image of ${selectedImage.title}`}
             width={430}
