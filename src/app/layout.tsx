@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import StyledComponentsRegistry from '@/config/style/registry';
 import GlobalStyles from './global';
+import { ToastContainer } from 'react-toastify';
 import 'react-loading-skeleton/dist/skeleton.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -30,6 +32,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <GlobalStyles />
         <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <ToastContainer />
       </body>
     </html>
   );

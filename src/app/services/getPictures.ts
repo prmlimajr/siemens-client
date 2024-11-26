@@ -1,5 +1,5 @@
-import { api } from './api';
-import { Response } from '../types/response';
+import { api } from '@/config/api';
+import { Response } from '@/app/types/response';
 
 export async function getPictures(
   page: number,
