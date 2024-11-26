@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import StyledComponentsRegistry from '@/config/style/registry';
 import GlobalStyles from './global';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',

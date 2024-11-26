@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+
 import { getPictures } from './services/getPictures';
 import { Picture } from './types/picture';
-import Image from 'next/image';
+import { LoadingContent } from './components/LoadingContent';
 
 import {
   ActionContainer,
@@ -35,7 +37,7 @@ export default function Home() {
           selectLastImage ? pictures[pictures.length - 1] : pictures[0],
         );
         setLastPage(lastPage);
-        setPage(newPage); // Set the page internally here
+        setPage(newPage);
       } catch (error) {
         console.error(error);
       } finally {
@@ -53,7 +55,7 @@ export default function Home() {
 
       if (action === 'previous') {
         if (isAtStart && page > 1) {
-          loadPictures(page - 1, true); // Only call loadPictures, no external setPage
+          loadPictures(page - 1, true);
         } else if (!isAtStart) {
           setSelectedImage(images[currentIndex - 1]);
         }
@@ -61,7 +63,7 @@ export default function Home() {
 
       if (action === 'next') {
         if (isAtEnd && page < lastPage) {
-          loadPictures(page + 1); // Only call loadPictures, no external setPage
+          loadPictures(page + 1);
         } else if (!isAtEnd) {
           setSelectedImage(images[currentIndex + 1]);
         }
@@ -71,17 +73,15 @@ export default function Home() {
   );
 
   useEffect(() => {
-    loadPictures(page); // This ensures initial load but avoids external interference
-  }, []); // Removed dependency on `page`
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+    loadPictures(page);
+  }, []);
 
   return (
     <Container>
       <Viewer>
-        {selectedImage && (
+        {isLoading ? (
+          <LoadingContent width={430} height={393} />
+        ) : (
           <Image
             src={selectedImage.pictureFile.imagePath}
             alt={selectedImage.title}
@@ -115,24 +115,34 @@ export default function Home() {
       </Viewer>
 
       <GalleryContainer>
-        {images.map((image) => (
-          <GalleryItem key={image.id}>
-            <Thumbnail
-              src={image.pictureFile.thumbnailPath}
-              alt={image.title}
-              width={145}
-              height={133}
-              onClick={() => setSelectedImage(image)}
-              $selected={selectedImage?.id === image.id}
-            />
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <GalleryItem key={index}>
+                <LoadingContent width={145} height={133} />
 
-            <ImageTitleContainer $selected={selectedImage?.id === image.id}>
-              <ImageTitle $selected={selectedImage?.id === image.id}>
-                {image.pictureFile.thumbnailName}
-              </ImageTitle>
-            </ImageTitleContainer>
-          </GalleryItem>
-        ))}
+                <ImageTitleContainer $selected={false}>
+                  <LoadingContent width="100%" height={20} />
+                </ImageTitleContainer>
+              </GalleryItem>
+            ))
+          : images.map((image) => (
+              <GalleryItem key={image.id}>
+                <Thumbnail
+                  src={image.pictureFile.thumbnailPath}
+                  alt={image.title}
+                  width={145}
+                  height={133}
+                  onClick={() => setSelectedImage(image)}
+                  $selected={selectedImage?.id === image.id}
+                />
+
+                <ImageTitleContainer $selected={selectedImage?.id === image.id}>
+                  <ImageTitle $selected={selectedImage?.id === image.id}>
+                    {image.pictureFile.thumbnailName}
+                  </ImageTitle>
+                </ImageTitleContainer>
+              </GalleryItem>
+            ))}
       </GalleryContainer>
     </Container>
   );
